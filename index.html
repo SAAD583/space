@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+</head>
+<body>
+    
+    <div id="app">
+
+    </div>
+
+    <script type="module">
+
+import * as THREE from "./three.module.js"
+import {OrbitControls} from "./OrbitControls.js"
+
+const renderer = new THREE.WebGLRenderer()
+
+renderer.shadowMap.enabled = true
+renderer.setSize(window.innerWidth, window.innerHeight)
+
+document.querySelector("#app").appendChild(renderer.domElement)
+
+const scene = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  .1,
+  1000
+)
+
+const orbit = new OrbitControls(camera, renderer.domElement)
+camera.position.set(-90, 140, 100)
+orbit.update()
+
+
+const ambientLight = new THREE.AmbientLight(0x333)
+scene.add(ambientLight)
+
+const cubeTextureLoader = new THREE.CubeTextureLoader()
+scene.background = cubeTextureLoader.load([
+  "./src/stars.jpg",
+  "./src/stars.jpg",
+  "./src/stars.jpg",
+  "./src/stars.jpg",
+  "./src/stars.jpg",
+  "./src/stars.jpg",
+])
+
+const textureLoader = new THREE.TextureLoader()
+
+const sunGeometry = new THREE.SphereGeometry(18, 30, 30)
+const sunMaterial = new THREE.MeshBasicMaterial({
+  map: textureLoader.load("./src/sun.jpg")
+})
+const sunSphere = new THREE.Mesh(sunGeometry, sunMaterial)
+scene.add(sunSphere)
+
+
+
+function createPlanet(size, texture, position, ring) {
+    const geo = new THREE.SphereGeometry(size, 35, 35)
+    const mat = new THREE.MeshStandardMaterial({
+      map: textureLoader.load(texture)
+    })
+    const mesh = new THREE.Mesh(geo, mat)
+    mesh.position.x = position
+    const obj = new THREE.Object3D()
+    scene.add(obj)
+    obj.add(mesh)
+
+    if(ring) {
+      const ringGeo = new THREE.RingGeometry(ring.innerRadius, ring.outerRadius, 32)
+      const ringMat = new THREE.MeshBasicMaterial({
+        map: textureLoader.load(ring.texture),
+        side: THREE.DoubleSide
+      })
+      const ringMesh = new THREE.Mesh(ringGeo, ringMat)
+      obj.add(ringMesh)
+      ringMesh.position.x = position
+      ringMesh.rotation.x = 0.5 * Math.PI
+    }
+    return {
+      mesh,
+      obj
+    }
+}
+
+
+const mercuryPlanet = createPlanet(4.2, "./src/mercury.jpg", 28)
+const saturnPlanet = createPlanet(10, "./src/saturn.jpg", 138, {
+  innerRadius: 10,
+  outerRadius: 20,
+  texture: "./src/saturn ring.png"
+})
+const venusPlanet = createPlanet(10, "./src/venus.jpg", 45)
+const earthPlanet = createPlanet(6, "./src/earth.jpg", 65)
+const marsPlanet = createPlanet(4, "./src/mars.jpg", 78)
+const jupiterPlanet = createPlanet(12, "./src/jupiter.jpg", 100)
+const uranusPlanet = createPlanet(7, "./src/jupiter.jpg", 176, {
+  innerRadius: 7,
+  outerRadius: 12,
+  texture: "./src/uranus ring.png"
+})
+const neptunePlanet = createPlanet(7, "./src/neptune.jpg", 200)
+const plutoPlanet = createPlanet(2.8, "./src/pluto.jpg", 216)
+
+
+
+
+
+
+
+
+
+
+
+const pointLight = new THREE.PointLight(0xffffff, 2, 300)
+scene.add(pointLight)
+
+
+console.log(sunSphere);
+function animate() {
+
+  sunSphere.rotateY(0.004)
+  mercuryPlanet.mesh.rotateY(0.004)
+  venusPlanet.mesh.rotateY(0.002)
+  earthPlanet.mesh.rotateY(0.02)
+  marsPlanet.mesh.rotateY(0.018)
+  jupiterPlanet.mesh.rotateY(0.04)
+  saturnPlanet.mesh.rotateY(0.038)
+  uranusPlanet.mesh.rotateY(0.03)
+  neptunePlanet.mesh.rotateY(0.032)
+  plutoPlanet.mesh.rotateY(0.008)
+  
+  sunSphere.rotateY(0.004)
+  mercuryPlanet.obj.rotateY(0.04)
+  venusPlanet.obj.rotateY(0.015)
+  earthPlanet.obj.rotateY(0.01)
+  marsPlanet.obj.rotateY(0.008)
+  jupiterPlanet.obj.rotateY(0.002)
+  saturnPlanet.obj.rotateY(0.0008)
+  uranusPlanet.obj.rotateY(0.0006)
+  neptunePlanet.obj.rotateY(0.0004)
+  plutoPlanet.obj.rotateY(0.0003)
+
+
+  renderer.render(scene, camera)
+}
+
+renderer.setAnimationLoop(animate)
+
+
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix()
+  renderer.setSize(window.innerWidth, window.innerHeight)
+})
+
+
+
+// import * as THREE from 'three'
+// import "./style.css"
+// import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
+// import * as dat from 'dat.gui'
+// import space from "./src/space.jpg"
+// import space2 from "./src/space2.jpg"
+
+// const renderer = new THREE.WebGLRenderer()
+
+// renderer.shadowMap.enabled = true
+// renderer.setSize(window.innerWidth, window.innerHeight)
+
+// document.querySelector("#app").appendChild(renderer.domElement)
+
+
+// const scene = new THREE.Scene()
+// const camera = new THREE.PerspectiveCamera(
+//   75,
+//   window.innerWidth / window.innerHeight,
+//   0.1,
+//   1000
+// )
+
+// // const ambientLight = new THREE.AmbientLight(0x333333)
+// // scene.add(ambientLight)
+
+
+
+
+
+// const spotLight = new THREE.SpotLight(0xffffff)
+// scene.add(spotLight)
+// spotLight.position.set(-100, 100, 0)
+// spotLight.castShadow = true
+// spotLight.angle = .2
+
+// const spotLightHelper = new THREE.SpotLightHelper(spotLight)
+// scene.add(spotLightHelper)
+
+// // scene.fog = new THREE.Fog(0xffffff, 0, 200)
+
+// scene.fog = new THREE.FogExp2(0xffffff, 0.01)
+
+// // renderer.setClearColor(0xffff00)
+// // const directLight = new THREE.DirectionalLight(0xFFFFFF, 0.8)
+// // scene.add(directLight)
+
+// // directLight.position.set(-30, 50, 0)
+// // directLight.castShadow = true
+// // directLight.shadow.camera.bottom = -10
+// // directLight.shadow.camera.right = 10
+
+// // const dlLightHelper = new THREE.DirectionalLightHelper(directLight, 5)
+// // scene.add(dlLightHelper)
+
+// // const dlLightShadowHelper = new THREE.CameraHelper(directLight.shadow.camera)
+// // scene.add(dlLightShadowHelper)
+
+
+// const mousePosition = new THREE.Vector2()
+// window.addEventListener("mousemove", e => {
+//   console.log(e.clientY);
+//   mousePosition.y = - (e.clientY / window.innerHeight) * 2 + 1
+//   mousePosition.x  = (e.clientX / window.innerWidth) * 2 - 1
+// })
+
+// const rayCaster = new THREE.Raycaster()
+
+// const textureLoader = new THREE.TextureLoader()
+
+// const cubeTextureLoader = new THREE.CubeTextureLoader()
+// scene.background = cubeTextureLoader.load([
+//   space,
+//   space,
+//   space,
+//   space,
+//   space,
+//   space
+// ])
+
+// const orbit = new OrbitControls(camera, renderer.domElement)
+
+// const axesHelper = new THREE.AxesHelper(6)
+// scene.add(axesHelper)
+
+// camera.position.set(-10,20,20)
+// orbit.update()
+
+// const gridHelper = new THREE.GridHelper(30,30)
+// scene.add(gridHelper)
+
+// const boxGeometry = new THREE.BoxGeometry(5,5,5)
+// const boxMaterial = new THREE.MeshBasicMaterial({color: 0xff00ff, wireframe: true})
+// const box = new THREE.Mesh(boxGeometry, boxMaterial)
+// scene.add(box)
+
+
+
+// const boxGeometry2 = new THREE.BoxGeometry(5,5,5)
+
+// const box2Materials = [
+//   new THREE.MeshBasicMaterial({map: textureLoader.load(space2)}),
+//   new THREE.MeshBasicMaterial({map: textureLoader.load(space2)}),
+//   new THREE.MeshBasicMaterial({map: textureLoader.load(space2)}),
+//   new THREE.MeshBasicMaterial({map: textureLoader.load(space)}),
+//   new THREE.MeshBasicMaterial({map: textureLoader.load(space)}),
+//   new THREE.MeshBasicMaterial({map: textureLoader.load(space)})
+// ]
+// const box2 = new THREE.Mesh(boxGeometry2, box2Materials)
+// scene.add(box2)
+// box2.position.set(8,8,8)
+// box2.name = "flyingBox"
+
+// const planeGeometry = new THREE.PlaneGeometry(30,30)
+// const planeMaterial = new THREE.MeshStandardMaterial({
+//   color: 0xffffff,
+//   side: THREE.DoubleSide
+// })
+// const plane = new THREE.Mesh(planeGeometry, planeMaterial)
+// plane.rotation.x = -0.5 * Math.PI
+// scene.add(plane)
+// plane.receiveShadow = true
+// //
+// const sphereGeometry = new THREE.SphereGeometry(4,50,50)
+// const sphereMaterial = new THREE.MeshStandardMaterial({
+//   color: 0xff0000,
+//    wireframe: false
+// })
+// const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
+// scene.add(sphere)
+// sphere.position.set(-10,5,5)
+// sphere.castShadow = true
+
+// const gui = new dat.GUI()
+// const options = {
+//   sphereColor : "#ff0000",
+//   wireframe: false,
+//   speed: .01,
+//   angle: .2,
+//   penumbra: 0,
+//   intensity: 1
+// }
+
+// gui.addColor(options, 'sphereColor').onChange((e) => {
+//   sphere.material.color.set(e)
+// })
+
+// gui.add(options, 'wireframe').onChange(e => {
+//   sphere.material.wireframe = e
+// })
+
+// gui.add(options, 'speed', 0, .1)
+// gui.add(options, 'angle', .2, 1)
+// gui.add(options, 'penumbra', 0, 1)
+// gui.add(options, 'intensity', 0, 1)
+
+// let step = 0
+
+
+// const sphereId = sphere.id
+
+// function animate() {
+//   box.rotation.x += 0.01
+//   box.rotation.y += 0.01
+
+//   step += options.speed
+//   sphere.position.y = 10 * Math.abs(Math.sin(step))
+
+//   spotLight.angle = options.angle
+//   spotLight.penumbra = options.penumbra
+//   spotLight.intensity = options.intensity
+//   spotLightHelper.update()
+
+
+//   rayCaster.setFromCamera(mousePosition, camera)
+//   const intersects = rayCaster.intersectObjects(scene.children)
+
+//   for(let i = 0; i < intersects.length; i++) {
+//     if (intersects[i].object.id == sphereId) {
+//       sphere.material.color.set(0x0000ff)
+//     }
+//     if (intersects[i].object.name === "flyingBox") {
+//       box2.rotation.x += 0.01
+//     }
+//   }
+//   renderer.render(scene, camera)
+// }
+
+// renderer.setAnimationLoop(animate)
+
+
+// window.addEventListener("resize", () => {
+//    camera.aspect = window.innerWidth / window.innerHeight
+//    camera.updateProjectionMatrix()
+//    renderer.setSize(window.innerWidth, window.innerHeight) 
+//     })    </script>
+</body>
+</html>
