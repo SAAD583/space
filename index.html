@@ -34,6 +34,10 @@
             right: 0;
             margin: auto;
         }
+
+        #app {
+          visibility: hidden;
+        }
     </style>
 </head>
 <body>
@@ -47,16 +51,20 @@
 
 
 
-document.onreadystatechange = function() {
-    if (document.readyState !== "complete") {
-        document.querySelector("body").style.visibility = "hidden";
-        document.querySelector("#loader").style.visibility = "visible";
-    } else {
-        document.querySelector("#loader").style.display = "none";
-        document.querySelector("body").style.visibility = "visible";
-    }
-};
+// document.onreadystatechange = function() {
+//     if (document.readyState !== "complete") {
+//         document.querySelector("body").style.visibility = "hidden";
+//         document.querySelector("#loader").style.visibility = "visible";
+//     } else {
+//         document.querySelector("#loader").style.display = "none";
+//         document.querySelector("body").style.visibility = "visible";
+//     }
+// };
 
+window.addEventListener("load", () => {
+  document.getElementById("app").style.visibility = "visible"
+  document.getElementById("loader").style.visibility = "hidden"
+})
 
 
 import * as THREE from "./three.module.js"
